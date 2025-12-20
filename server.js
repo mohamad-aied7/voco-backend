@@ -108,3 +108,6 @@ app.post('/api/visits', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
 });
+
+
+// update cors fix
