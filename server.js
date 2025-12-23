@@ -7,6 +7,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
+const path = require('path'); // 👈 مكتبة التعامل مع المسارات
 
 // إعداد الاتصال بقاعدة البيانات
 const pool = new Pool({
@@ -19,6 +20,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// 👇👇👇 هذا هو السطر السحري الناقص (لعرض الداشبورد) 👇👇👇
+app.use(express.static('public')); 
+// 👆👆👆 بدونه تطلع لك رسالة Cannot GET /
 
 // ---------------------------------------------------------
 // 📥 1. جلب البيانات (GET Requests)
@@ -73,11 +78,6 @@ app.post('/api/login', async (req, res) => {
         
         if (result.rows.length > 0) {
             const user = result.rows[0];
-            
-            // تسجيل إشعار دخول (اختياري - يمكن إيقافه لتقليل الازعاج)
-            // await pool.query("INSERT INTO notifications (title, message, type) VALUES ($1, $2, 'info')", 
-            //     ['تسجيل دخول', `المندوب ${user.name} دخل للتطبيق`]);
-            
             res.status(200).json({ success: true, user: user });
         } else {
             res.status(401).json({ success: false, message: 'رقم الهاتف أو كلمة المرور غير صحيحة' });
@@ -122,7 +122,6 @@ app.post('/api/visits', async (req, res) => {
         );
 
         // 2. زيادة رصيد المندوب (مكافأة 10 نقاط لكل زيارة) 💰
-        // (تم تعديلها لزيادة الرصيد بدلاً من الخصم كتحفيز)
         await pool.query('UPDATE users SET balance = balance + 10 WHERE id = $1', [user_id]);
 
         // 3. إرسال إشعار للإدارة
