@@ -258,7 +258,9 @@
     <script>
         // إعداد التاريخ
         document.getElementById('lastUpdateDate').innerText = new Date().toLocaleDateString('ar-EG');
-        const BASE_URL = 'https://voco-api-5zqm.onrender.com/api';
+        
+        // 👇👇 تم التعديل هنا: الرابط النسبي السحري 👇👇
+        const BASE_URL = '/api';
 
         // دالة فحص حالة السيرفر الحقيقية
         async function checkServer() {

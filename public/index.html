@@ -198,8 +198,9 @@
     </div>
 
     <script>
-        // 👇 رابط السيرفر اللي طلبته
-        const BASE_URL = 'https://voco-api-5zqm.onrender.com/api'; 
+        // 👇👇 التعديل النهائي والسحري 👇👇
+        const BASE_URL = '/api'; 
+        
         let allVisitsData = []; 
         let currentNotifications = [];
         let barChart = null;
@@ -340,7 +341,7 @@
             } else {
                 data.slice(0, 50).forEach(v => { 
                     const mapLink = v.lat && v.lng 
-                        ? `<a href="https://maps.google.com/?q=${v.lat},${v.lng}" target="_blank" class="text-primary"><i class="fas fa-map-marker-alt"></i></a>`
+                        ? `<a href="http://googleusercontent.com/maps.google.com/?q=${v.lat},${v.lng}" target="_blank" class="text-primary"><i class="fas fa-map-marker-alt"></i></a>`
                         : '<span class="text-muted">-</span>';
 
                     // تنسيق الحقول الجديدة
