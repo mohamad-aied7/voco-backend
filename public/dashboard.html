@@ -28,7 +28,7 @@
         .bubbles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
         .bubbles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; }
         
-        /* القائمة الجانبية */
+        /* القائمة الجانبية (للكمبيوتر) */
         .sidebar { width: 250px; height: 100vh; background-color: #1e3a8a; padding: 20px; position: fixed; top: 0; right: 0; z-index: 1000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); transition: all 0.3s ease; }
         .sidebar a { display: flex; align-items: center; padding: 12px 15px; margin-bottom: 10px; color: #d1d5db; text-decoration: none; border-radius: 10px; transition: all 0.3s ease; }
         .sidebar a:hover, .sidebar a.active { background-color: #3b82f6; color: white; transform: translateX(-8px); }
@@ -37,17 +37,33 @@
 
         .main-content { margin-right: 250px; padding: 30px; transition: all 0.3s ease; }
         
-        /* شريط الموبايل */
+        /* شريط الموبايل السفلي */
         .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 2000; justify-content: space-around; padding: 10px 0; border-top-left-radius: 15px; border-top-right-radius: 15px; }
-        .bottom-nav a { color: #999; text-decoration: none; text-align: center; font-size: 12px; flex: 1; }
-        .bottom-nav a i { display: block; font-size: 20px; margin-bottom: 5px; }
+        .bottom-nav a { color: #999; text-decoration: none; text-align: center; font-size: 12px; flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .bottom-nav a i { font-size: 20px; margin-bottom: 5px; }
         .bottom-nav a.active { color: #1e3a8a; font-weight: bold; }
 
+        /* =========================================
+           📱 كود التجاوب (للموبايل والتابلت)
+           ========================================= */
         @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .main-content { margin-right: 0; padding: 15px; }
-            .bottom-nav { display: flex; }
-            .status-card h2 { font-size: 35px; }
+            .sidebar { display: none; } /* إخفاء القائمة الجانبية في الموبايل */
+            .main-content { margin-right: 0; padding: 15px; padding-bottom: 80px; } /* تعديل الهوامش */
+            .bottom-nav { display: flex; } /* إظهار الشريط السفلي */
+            
+            /* تحسين عرض البطاقات في الموبايل */
+            .status-card h2 { font-size: 28px; }
+            .col-md-6 { margin-bottom: 15px; }
+            
+            /* جعل الجدول قابل للتمرير */
+            .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            
+            /* تحسين الأزرار العلوية */
+            .d-flex.justify-content-between { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .d-flex.align-items-center.gap-3 { width: 100%; justify-content: space-between; margin-top: 10px; }
+            
+            /* إخفاء الأزرار غير الضرورية في الموبايل */
+            .d-none.d-md-flex { display: none !important; }
         }
 
         /* البطاقات */
@@ -66,12 +82,11 @@
         .filter-section { background: white; padding: 25px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-right: 5px solid #1e3a8a; }
         .table-responsive { background: white; border-radius: 15px; padding: 20px; margin-top: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
         
-        /* 🛠️ تعديل تنسيق الجدول ليتحمل الأعمدة الجديدة */
         .table thead th { background-color: #1e3a8a; color: white; padding: 12px 10px; border: none; font-size: 12px; white-space: nowrap; }
         .table tbody td { padding: 12px 10px; vertical-align: middle; white-space: nowrap; font-size: 12px; }
         .table tbody tr:hover { background-color: #f0f7ff; cursor: pointer; }
         
-        /* Badges للإضافات الجديدة */
+        /* Badges */
         .badge-place { background-color: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 11px; }
         .badge-interested { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 11px; }
         .badge-not-interested { background-color: #fee2e2; color: #991b1b; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 11px; }
@@ -108,8 +123,8 @@
     <div class="bottom-nav">
         <a href="dashboard.html" class="active"><i class="fas fa-home"></i> الرئيسية</a>
         <a href="reports.html"><i class="fas fa-chart-line"></i> التقارير</a>
-        <a href="#" onclick="showNotifications()"><i class="fas fa-bell"></i> تنبيهات</a>
-        <a href="#" onclick="toggleDarkMode(event)"><i class="fas fa-adjust"></i> المظهر</a>
+        <a href="users.html"><i class="fas fa-users"></i> المندوبين</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> الإعدادات</a>
     </div>
 
     <div class="main-content">
@@ -123,6 +138,10 @@
                 <button class="notification-btn" onclick="showNotifications()">
                     <i class="fas fa-bell fa-lg"></i>
                     <span id="notifyBadge" class="badge-notify">0</span>
+                </button>
+                
+                <button class="btn btn-outline-secondary d-md-none" onclick="toggleDarkMode(event)">
+                   <i class="fas fa-moon"></i>
                 </button>
 
                 <div class="d-none d-md-flex gap-2">
@@ -198,27 +217,22 @@
     </div>
 
     <script>
-        // 👇👇 التعديل النهائي والسحري 👇👇
         const BASE_URL = '/api'; 
         
         let allVisitsData = []; 
         let currentNotifications = [];
         let barChart = null;
 
-        // دالة جلب البيانات
         async function loadData() {
             try {
-                // 1. جلب الزيارات
                 const resVisits = await axios.get(`${BASE_URL}/visits`);
                 allVisitsData = resVisits.data.data;
                 applyFilters(); 
                 populateRepFilters();
 
-                // 2. جلب الإشعارات
                 const resNotify = await axios.get(`${BASE_URL}/notifications`);
                 currentNotifications = resNotify.data.data;
                 updateNotificationBadge(resNotify.data.unreadCount);
-
             } catch (e) { 
                 console.error("Error:", e);
                 if(document.getElementById('visits-container').innerText.includes('جاري التحميل')) {
@@ -269,7 +283,6 @@
 
         function populateRepFilters() {
             const reps = [...new Set(allVisitsData.map(v => v.rep_name).filter(r => r))]; 
-            
             const filterRep = document.getElementById('filterRep');
             const currentSelected = filterRep.value;
             filterRep.innerHTML = '<option value="all">الكل</option>'; 
@@ -318,7 +331,6 @@
                 </div>
             `;
             
-            // 🛠️ إضافة الأعمدة الجديدة للجدول (الهاتف، المكان، الاهتمام، الموعد)
             let html = `
             <table class="table table-hover">
                 <thead>
@@ -343,17 +355,13 @@
                     const mapLink = v.lat && v.lng 
                         ? `<a href="http://googleusercontent.com/maps.google.com/?q=${v.lat},${v.lng}" target="_blank" class="text-primary"><i class="fas fa-map-marker-alt"></i></a>`
                         : '<span class="text-muted">-</span>';
-
-                    // تنسيق الحقول الجديدة
                     const placeBadge = v.place_type ? `<span class="badge-place">${v.place_type}</span>` : '-';
                     const interestBadge = v.is_interested ? `<span class="badge-interested">مهتم</span>` : `<span class="badge-not-interested">غير مهتم</span>`;
-                    
                     let nextMeeting = '-';
                     if (v.has_next_meeting && v.next_meeting_date) {
                         const nd = new Date(v.next_meeting_date);
                         nextMeeting = `<span style="font-size:10px; font-weight:bold; color:#1e3a8a">${nd.toLocaleDateString()}</span>`;
                     }
-
                     html += `<tr data-aos="zoom-in">
                         <td>${new Date(v.created_at).toLocaleDateString('ar-EG')}</td>
                         <td>${v.rep_name}</td>
@@ -394,7 +402,6 @@
             const tbody = document.getElementById('rptBody'); 
             tbody.innerHTML = '';
             
-            // 🛠️ إضافة الأعمدة الجديدة لتقرير الـ PDF
             filteredData.slice(0, 15).forEach(v => {
                 const interest = v.is_interested ? 'نعم' : 'لا';
                 const nextM = v.has_next_meeting ? 'يوجد' : '-';
@@ -429,9 +436,7 @@
         
         async function generateAIAnalysis() {
             const filteredData = getFilteredDataForReport();
-            const selectedRep = document.getElementById('reportRepFilter').value;
             const aiSection = document.getElementById('aiSection');
-            
             aiSection.style.display = 'block';
             aiSection.innerHTML = '<p class="text-center"><i class="fas fa-sync fa-spin ms-2"></i> جاري التحليل...</p>';
             await new Promise(r => setTimeout(r, 1500)); 
@@ -447,7 +452,6 @@
                     <li>عدد العملاء المهتمين: <strong>${interestedCount}</strong> (نسبة النجاح: ${interestRate}%)</li>
                 </ul>
             `;
-
             if (interestRate < 20) {
                 analysisText += `<div class="alert alert-danger"><strong>تنبيه:</strong> نسبة الاهتمام منخفضة جداً (${interestRate}%). يرجى مراجعة أسلوب العرض.</div>`;
             } else if (interestRate > 50) {
@@ -455,14 +459,12 @@
             } else {
                 analysisText += `<div class="alert alert-warning"><strong>متوسط:</strong> الأداء مقبول ولكن يحتاج لتحسين.</div>`;
             }
-            
             aiSection.innerHTML = analysisText;
         }
 
         async function downloadFullReport() {
             document.getElementById('btnDownloadPDF').disabled = true;
             document.getElementById('btnDownloadPDF').innerHTML = '<i class="fas fa-spinner fa-spin ms-2"></i> جاري التحميل...';
-
             const printArea = document.getElementById('printArea');
             const canvas = await html2canvas(printArea, { scale: 2, useCORS: true, allowTaint: true, scrollY: -window.scrollY });
             const { jsPDF } = window.jspdf;
@@ -473,7 +475,6 @@
             const imgHeight = canvas.height * pdfWidth / canvas.width;
             let heightLeft = imgHeight;
             let position = 0;
-            
             pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
             heightLeft -= pdfHeight;
             while (heightLeft >= 0) {
@@ -495,6 +496,30 @@
         function updateToggleIcon(isDark) {
             const btn = document.getElementById('darkModeToggle');
             if(btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i> الوضع الفاتح' : '<i class="fas fa-moon"></i> الوضع المظلم';
+        }
+
+        // CSV Export Function
+        async function exportToCSV() {
+            if (allVisitsData.length === 0) { alert("لا توجد بيانات."); return; }
+            const headers = ["التاريخ", "اسم المندوب", "اسم العميل", "الهاتف", "المكان", "مهتم", "النص المحول"];
+            let csv = headers.join(',') + '\n';
+            allVisitsData.forEach(v => {
+                const row = [
+                    `"${new Date(v.created_at).toLocaleDateString()}"`,
+                    `"${v.rep_name || ''}"`,
+                    `"${v.customer_name || ''}"`,
+                    `"${v.customer_phone || ''}"`,
+                    `"${v.place_type || ''}"`,
+                    v.is_interested ? 'نعم' : 'لا',
+                    `"${(v.voice_text || '').replace(/"/g, '""')}"`
+                ].join(',');
+                csv += row + '\n';
+            });
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Voco_Data_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
