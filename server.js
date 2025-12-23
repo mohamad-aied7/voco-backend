@@ -1,41 +1,42 @@
 require('dotenv').config();
 const dns = require('dns');
-// حل مشكلة الاتصال بـ Supabase (IPv6)
-dns.setDefaultResultOrder('ipv4first'); 
+
+// 👇👇 هذا هو حل المشكلة مالتك (إجبار استخدام IPv4) 👇👇
+dns.setDefaultResultOrder('ipv4first');
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
-const path = require('path'); // 👈 مكتبة التعامل مع المسارات
+const path = require('path');
 
 // إعداد الاتصال بقاعدة البيانات
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL, 
-    ssl: { rejectUnauthorized: false } // ضروري لـ Supabase/Render
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 });
 
 const app = express();
-const PORT = process.env.PORT || 3000; 
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-// 👇👇👇 هذا هو السطر السحري الناقص (لعرض الداشبورد) 👇👇👇
-app.use(express.static('public')); 
-// 👆👆👆 بدونه تطلع لك رسالة Cannot GET /
+// تشغيل ملفات الداشبورد (HTML)
+app.use(express.static('public'));
 
 // ---------------------------------------------------------
 // 📥 1. جلب البيانات (GET Requests)
 // ---------------------------------------------------------
 
-// جلب جميع الزيارات (للداشبورد والتطبيق)
+// جلب جميع الزيارات
 app.get('/api/visits', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM visits ORDER BY created_at DESC');
         res.status(200).json({ success: true, data: result.rows });
     } catch (err) {
         console.error("Error fetching visits:", err);
+        // عرض تفاصيل الخطأ حتى نعرف السبب
         res.status(500).json({ success: false, error: err.message });
     }
 });
@@ -50,7 +51,7 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-// جلب الإشعارات (آخر 20 إشعار)
+// جلب الإشعارات
 app.get('/api/notifications', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM notifications ORDER BY created_at DESC LIMIT 20');
@@ -62,7 +63,7 @@ app.get('/api/notifications', async (req, res) => {
             unreadCount: parseInt(countRes.rows[0].count) 
         });
     } catch (err) {
-        res.status(500).json({ success: false, error: 'فشل جلب الإشعارات' });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
@@ -87,23 +88,22 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// 🔥 استلام زيارة جديدة (مع الذكاء والتفاصيل الكاملة)
+// تسجيل زيارة جديدة
 app.post('/api/visits', async (req, res) => {
     const { 
         user_id, 
-        rep_name, rep_phone,       // بيانات المندوب
-        customer_name, customer_phone, // بيانات العميل
-        place_type,                // 🏢 نوع المكان
+        rep_name, rep_phone,
+        customer_name, customer_phone,
+        place_type,
         voice_text, 
-        is_interested,             // ❤️ مهتم؟
-        has_next_meeting,          // 📅 موعد قادم؟
+        is_interested,
+        has_next_meeting,
         next_meeting_date, 
         next_meeting_location,
         lat, lng 
     } = req.body;
 
     try {
-        // 1. حفظ الزيارة في قاعدة البيانات
         await pool.query(
             `INSERT INTO visits (
                 user_id, rep_name, rep_phone, 
@@ -121,10 +121,8 @@ app.post('/api/visits', async (req, res) => {
             ]
         );
 
-        // 2. زيادة رصيد المندوب (مكافأة 10 نقاط لكل زيارة) 💰
         await pool.query('UPDATE users SET balance = balance + 10 WHERE id = $1', [user_id]);
 
-        // 3. إرسال إشعار للإدارة
         let notifTitle = 'زيارة جديدة 📍';
         let notifType = 'info';
         let notifMsg = `قام ${rep_name} بزيارة ${customer_name}`;
@@ -133,8 +131,6 @@ app.post('/api/visits', async (req, res) => {
             notifTitle = 'فرصة بيع محتملة! 🔥';
             notifType = 'success';
             notifMsg += ' (العميل مهتم جداً)';
-        } else if (place_type) {
-            notifMsg += ` - نوع المكان: ${place_type}`;
         }
 
         await pool.query("INSERT INTO notifications (title, message, type) VALUES ($1, $2, $3)", 
@@ -148,7 +144,6 @@ app.post('/api/visits', async (req, res) => {
     }
 });
 
-// تشغيل السيرفر
 app.listen(PORT, () => {
     console.log(`✅ Server running securely on port ${PORT}`);
 });
