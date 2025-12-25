@@ -352,9 +352,11 @@
                 html += `<tr><td colspan="9" class="text-center p-4">لا توجد بيانات</td></tr>`;
             } else {
                 data.slice(0, 50).forEach(v => { 
+                    // 👇👇👇 هنا تم التصحيح: الرابط الرسمي لخرائط جوجل 👇👇👇
                     const mapLink = v.lat && v.lng 
-                        ? `<a href="http://googleusercontent.com/maps.google.com/?q=${v.lat},${v.lng}" target="_blank" class="text-primary"><i class="fas fa-map-marker-alt"></i></a>`
+                        ? `<a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank" class="text-primary" style="font-weight:bold; text-decoration:underline;">📍 عرض الموقع</a>`
                         : '<span class="text-muted">-</span>';
+                        
                     const placeBadge = v.place_type ? `<span class="badge-place">${v.place_type}</span>` : '-';
                     const interestBadge = v.is_interested ? `<span class="badge-interested">مهتم</span>` : `<span class="badge-not-interested">غير مهتم</span>`;
                     let nextMeeting = '-';
