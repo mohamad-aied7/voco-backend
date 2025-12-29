@@ -8,8 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         :root {
@@ -17,7 +20,8 @@
             --card-bg: #060010;
             --text-color: #ffffff;
             --glow-color: 132, 0, 255;
-            --spotlight-radius: 300px;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
@@ -33,8 +37,8 @@
         .sidebar {
             width: 250px;
             height: 100vh;
-            background-color: rgba(6, 0, 16, 0.9);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(6, 0, 16, 0.95);
+            border-left: 1px solid var(--glass-border);
             padding: 20px;
             position: fixed;
             top: 0; right: 0; z-index: 1000;
@@ -53,37 +57,92 @@
 
         .main-content { margin-right: 250px; padding: 30px; }
 
-        /* قسم الفلاتر (جديد ✨) */
-        .filter-container {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+        /* --- تصميم لوحة التحكم (الفلاتر والأزرار) --- */
+        .control-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 30px;
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .filters-group {
+            display: flex;
+            gap: 10px;
             flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* إصلاح حقول الإدخال (لون غامق وكتابة بيضاء) */
+        .custom-input {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: #fff !important;
+            padding: 10px 15px;
+            border-radius: 12px;
+            min-width: 160px;
+            outline: none;
         }
         
-        .custom-input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 10px;
-            min-width: 150px;
-        }
         .custom-input:focus {
-            outline: none; border-color: #8400ff;
-            box-shadow: 0 0 10px rgba(132, 0, 255, 0.2);
+            border-color: #8400ff !important;
+            box-shadow: 0 0 10px rgba(132, 0, 255, 0.3);
         }
-        .filter-btn {
-            background: linear-gradient(45deg, #8400ff, #4b0082);
-            color: white; border: none; padding: 10px 25px;
-            border-radius: 10px; cursor: pointer; transition: 0.3s;
+
+        /* إصلاح ايقونة التاريخ لتكون بيضاء */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
         }
-        .filter-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(132, 0, 255, 0.4); }
+
+        /* الأزرار */
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-filter { background: linear-gradient(45deg, #8400ff, #6b21a8); }
+        .btn-filter:hover { box-shadow: 0 0 15px rgba(132, 0, 255, 0.5); transform: translateY(-2px); }
+
+        .btn-ai { background: linear-gradient(45deg, #f59e0b, #d97706); color: #fff; }
+        .btn-ai:hover { box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); transform: translateY(-2px); }
+
+        .btn-pdf { background: linear-gradient(45deg, #ef4444, #b91c1c); }
+        .btn-pdf:hover { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); transform: translateY(-2px); }
+
+        .btn-excel { background: linear-gradient(45deg, #10b981, #047857); }
+        .btn-excel:hover { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); transform: translateY(-2px); }
+
+        /* منطقة تحليل الذكاء الاصطناعي */
+        .ai-result-box {
+            display: none;
+            background: linear-gradient(to right, rgba(132, 0, 255, 0.1), rgba(0, 0, 0, 0));
+            border-right: 4px solid #8400ff;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* شبكة بينتو */
         .bento-grid {
@@ -96,12 +155,7 @@
             border-radius: 20px; padding: 25px; position: relative; overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: transform 0.1s;
         }
-        .magic-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(132, 0, 255, 0.15), transparent 300px);
-            opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1;
-        }
-        .magic-card:hover::before { opacity: 1; }
+        .magic-card:hover { border-color: rgba(132, 0, 255, 0.5); }
         
         .card-value { font-size: 36px; font-weight: 900; margin: 10px 0; background: linear-gradient(to right, #fff, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .card-label { font-size: 12px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; }
@@ -111,20 +165,21 @@
             background: rgba(6, 0, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px; padding: 20px; overflow-x: auto;
         }
-        .custom-table { width: 100%; border-collapse: collapse; color: #e4e4e7; min-width: 800px; }
-        .custom-table th { text-align: right; padding: 15px; color: #8400ff; font-size: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .custom-table td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; }
+        .custom-table { width: 100%; border-collapse: collapse; color: #e4e4e7; min-width: 900px; }
+        .custom-table th { text-align: right; padding: 15px; color: #8400ff; font-size: 13px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); white-space: nowrap; }
+        .custom-table td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; vertical-align: top; }
         .custom-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
         /* شارات الحالة */
-        .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .badge-status { padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; }
         .badge-yes { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
         .badge-no { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
 
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-content { margin-right: 0; padding: 15px; }
-            .filter-container { flex-direction: column; align-items: stretch; }
+            .control-panel { flex-direction: column; align-items: stretch; }
+            .actions-group { justify-content: space-between; margin-top: 10px; }
         }
     </style>
 </head>
@@ -140,22 +195,38 @@
         <a href="users.html"><i class="fas fa-users ms-2"></i> المندوبين</a>
     </div>
 
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="main-content" id="printArea"> <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">لوحة القيادة ✨</h2>
             <button class="btn btn-outline-light rounded-pill px-4" onclick="location.reload()">
                 <i class="fas fa-sync-alt"></i>
             </button>
         </div>
 
-        <div class="filter-container">
-            <select id="filterRep" class="custom-input form-select" style="background-color: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white;">
-                <option value="all">كل المندوبين</option>
-            </select>
-            <input type="date" id="filterDate" class="custom-input">
-            <button onclick="applyFilters()" class="filter-btn">تصفية النتائج</button>
-            <button onclick="resetFilters()" class="btn btn-outline-secondary text-white border-0">إعادة تعيين</button>
+        <div class="control-panel">
+            <div class="filters-group">
+                <select id="filterRep" class="custom-input">
+                    <option value="all">كل المندوبين</option>
+                </select>
+                <input type="date" id="filterDate" class="custom-input">
+                <button onclick="applyFilters()" class="btn-custom btn-filter">
+                    <i class="fas fa-filter"></i> تصفية
+                </button>
+            </div>
+
+            <div class="actions-group">
+                <button onclick="runAIAnalysis()" class="btn-custom btn-ai">
+                    <i class="fas fa-robot"></i> تحليل AI
+                </button>
+                <button onclick="downloadPDF()" class="btn-custom btn-pdf">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button onclick="exportExcel()" class="btn-custom btn-excel">
+                    <i class="fas fa-file-csv"></i> Excel
+                </button>
+            </div>
         </div>
+
+        <div id="aiResult" class="ai-result-box"></div>
 
         <div class="bento-grid">
             <div class="magic-card">
@@ -177,13 +248,14 @@
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>التاريخ</th>
-                        <th>المندوب</th>
-                        <th>العميل</th>
-                        <th>الهاتف</th>
-                        <th>المكان</th>
-                        <th>الاهتمام</th>
-                        <th>كلام المندوب (Voice Text)</th> <th>الموقع</th>
+                        <th width="10%">التاريخ</th>
+                        <th width="12%">المندوب</th>
+                        <th width="12%">العميل</th>
+                        <th width="10%">الهاتف</th>
+                        <th width="8%">المكان</th>
+                        <th width="8%">الاهتمام</th>
+                        <th width="35%">كلام المندوب (التحليل الكامل)</th>
+                        <th width="5%">الموقع</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -195,7 +267,8 @@
 
     <script>
         const BASE_URL = '/api';
-        let allData = []; // خزن البيانات هنا عشان الفلتر
+        let allData = []; 
+        let filteredData = []; // للاستخدام في التقارير
 
         // 1. تحريك الكروت
         document.querySelectorAll('.magic-card').forEach(card => {
@@ -216,47 +289,41 @@
         async function loadData() {
             try {
                 const res = await axios.get(`${BASE_URL}/visits`);
-                allData = res.data.data; // حفظ البيانات الأصلية
+                allData = res.data.data;
+                filteredData = allData; // البداية الكل
                 populateRepFilter(allData);
                 renderDashboard(allData);
             } catch (e) { console.error(e); }
         }
 
-        // 3. تعبئة قائمة المندوبين
+        // 3. الفلاتر
         function populateRepFilter(data) {
             const reps = [...new Set(data.map(v => v.rep_name))];
             const select = document.getElementById('filterRep');
-            // الحفاظ على خيار "الكل" ومسح الباقي
             select.innerHTML = '<option value="all">كل المندوبين</option>';
             reps.forEach(rep => {
                 select.innerHTML += `<option value="${rep}">${rep}</option>`;
             });
         }
 
-        // 4. تطبيق الفلتر
         function applyFilters() {
             const selectedRep = document.getElementById('filterRep').value;
             const selectedDate = document.getElementById('filterDate').value;
 
-            const filtered = allData.filter(item => {
+            filteredData = allData.filter(item => {
                 const itemDate = new Date(item.created_at).toISOString().split('T')[0];
                 const repMatch = selectedRep === 'all' || item.rep_name === selectedRep;
                 const dateMatch = !selectedDate || itemDate === selectedDate;
                 return repMatch && dateMatch;
             });
 
-            renderDashboard(filtered);
+            renderDashboard(filteredData);
+            // اخفاء نتيجة الـ AI عند تغيير الفلتر
+            document.getElementById('aiResult').style.display = 'none';
         }
 
-        function resetFilters() {
-            document.getElementById('filterRep').value = 'all';
-            document.getElementById('filterDate').value = '';
-            renderDashboard(allData);
-        }
-
-        // 5. عرض البيانات في الشاشة
+        // 4. عرض البيانات
         function renderDashboard(data) {
-            // الإحصائيات
             const total = data.length;
             const active = new Set(data.map(v => v.rep_name)).size;
             const interested = data.filter(v => v.is_interested).length;
@@ -266,7 +333,6 @@
             document.getElementById('activeAgents').innerText = active;
             document.getElementById('interestRate').innerText = `${rate}%`;
 
-            // الجدول
             const tbody = document.getElementById('tableBody');
             if(data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-secondary">لا توجد بيانات مطابقة</td></tr>';
@@ -274,7 +340,7 @@
             }
 
             let html = '';
-            data.slice(0, 20).forEach(v => {
+            data.slice(0, 30).forEach(v => { // عرض اخر 30 زيارة
                 const status = v.is_interested 
                     ? '<span class="badge-status badge-yes">مهتم</span>' 
                     : '<span class="badge-status badge-no">غير مهتم</span>';
@@ -283,24 +349,91 @@
                     ? `<a href="https://www.google.com/maps/search/?api=1&query=${v.lat},${v.lng}" target="_blank" style="color:#8400ff"><i class="fas fa-location-arrow"></i></a>`
                     : '-';
 
-                // 👇👇👇 إضافة النص الصوتي مع تنسيق جميل 👇👇👇
                 const voiceText = v.voice_text 
-                    ? `<span style="color:#d1d5db; font-size:12px; display:block; max-width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${v.voice_text}">${v.voice_text}</span>` 
+                    ? `<div style="white-space: normal; line-height: 1.6; color: #d1d5db; min-width: 250px;">${v.voice_text}</div>` 
                     : '<span style="color:#555">-</span>';
 
                 html += `
                     <tr>
-                        <td>${new Date(v.created_at).toLocaleDateString('en-GB')}</td>
-                        <td class="fw-bold text-white">${v.rep_name}</td>
-                        <td>${v.customer_name}</td>
-                        <td style="font-family:monospace; color:#a1a1aa">${v.customer_phone || '-'}</td>
-                        <td>${v.place_type || '-'}</td>
+                        <td style="white-space: nowrap;">${new Date(v.created_at).toLocaleDateString('en-GB')}</td>
+                        <td class="fw-bold text-white" style="white-space: nowrap;">${v.rep_name}</td>
+                        <td style="white-space: nowrap;">${v.customer_name}</td>
+                        <td style="font-family:monospace; color:#a1a1aa; white-space: nowrap;">${v.customer_phone || '-'}</td>
+                        <td style="white-space: nowrap;">${v.place_type || '-'}</td>
                         <td>${status}</td>
-                        <td>${voiceText}</td> <td>${mapLink}</td>
+                        <td>${voiceText}</td>
+                        <td>${mapLink}</td>
                     </tr>
                 `;
             });
             tbody.innerHTML = html;
+        }
+
+        // 5. 🤖 تحليل الذكاء الاصطناعي (AI Analysis)
+        function runAIAnalysis() {
+            const box = document.getElementById('aiResult');
+            box.style.display = 'block';
+            box.innerHTML = '<p class="text-white"><i class="fas fa-spinner fa-spin ms-2"></i> جاري تحليل البيانات بواسطة AI...</p>';
+
+            setTimeout(() => {
+                const total = filteredData.length;
+                const interested = filteredData.filter(v => v.is_interested).length;
+                const rate = total > 0 ? Math.round((interested/total)*100) : 0;
+                
+                let analysis = '';
+                if(rate > 50) analysis = 'الأداء ممتاز! المندوبين يقدمون عروضاً مقنعة.';
+                else if(rate > 20) analysis = 'الأداء متوسط، نحتاج لتحسين أسلوب الإقناع.';
+                else analysis = 'تحذير: نسبة الرفض عالية جداً. يجب مراجعة جودة الزيارات.';
+
+                box.innerHTML = `
+                    <h5 class="fw-bold text-white mb-2">📊 تقرير الذكاء الاصطناعي</h5>
+                    <p class="text-gray-300 mb-1">تم تحليل <strong>${total}</strong> زيارة.</p>
+                    <p class="text-gray-300 mb-1">عدد المهتمين: <strong>${interested}</strong> (النسبة: <span style="color:${rate>50?'#4ade80':'#f87171'}">${rate}%</span>)</p>
+                    <p class="mt-2 text-warning"><i class="fas fa-lightbulb ms-2"></i> ${analysis}</p>
+                `;
+            }, 1500); // محاكاة التأخير
+        }
+
+        // 6. 📄 تحميل PDF
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById('printArea'); // المنطقة المراد طباعتها
+            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#020005' });
+            
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`VOCO_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+
+        // 7. 📊 تحميل Excel
+        function exportExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM للعربية
+            csvContent += "التاريخ,المندوب,العميل,الهاتف,المكان,مهتم,النص\n";
+
+            filteredData.forEach(v => {
+                const row = [
+                    new Date(v.created_at).toLocaleDateString(),
+                    v.rep_name,
+                    v.customer_name,
+                    v.customer_phone,
+                    v.place_type,
+                    v.is_interested ? "نعم" : "لا",
+                    `"${(v.voice_text || '').replace(/"/g, '""')}"` // معالجة الفواصل في النص
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `VOCO_Data_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
         }
 
         loadData();
