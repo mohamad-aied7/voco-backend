@@ -16,7 +16,7 @@
             --bg-color: #020005;
             --card-bg: #060010;
             --text-color: #ffffff;
-            --glow-color: 132, 0, 255; /* Purple Glow */
+            --glow-color: 132, 0, 255;
             --spotlight-radius: 300px;
         }
 
@@ -37,169 +37,95 @@
             border-left: 1px solid rgba(255, 255, 255, 0.1);
             padding: 20px;
             position: fixed;
-            top: 0;
-            right: 0;
-            z-index: 1000;
+            top: 0; right: 0; z-index: 1000;
             backdrop-filter: blur(10px);
         }
-        
         .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            color: #8b8b8b;
-            text-decoration: none;
-            border-radius: 12px;
-            transition: 0.3s;
+            display: flex; align-items: center; padding: 12px 15px; margin-bottom: 10px;
+            color: #8b8b8b; text-decoration: none; border-radius: 12px; transition: 0.3s;
             border: 1px solid transparent;
         }
-        
         .sidebar a:hover, .sidebar a.active {
-            background: rgba(132, 0, 255, 0.1);
-            color: #fff;
+            background: rgba(132, 0, 255, 0.1); color: #fff;
             border-color: rgba(132, 0, 255, 0.3);
             box-shadow: 0 0 15px rgba(132, 0, 255, 0.2);
         }
 
-        /* المحتوى الرئيسي */
-        .main-content {
-            margin-right: 250px;
-            padding: 30px;
-        }
+        .main-content { margin-right: 250px; padding: 30px; }
 
-        /* شبكة البينتو (Magic Bento Grid) */
+        /* قسم الفلاتر (جديد ✨) */
+        .filter-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .custom-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            min-width: 150px;
+        }
+        .custom-input:focus {
+            outline: none; border-color: #8400ff;
+            box-shadow: 0 0 10px rgba(132, 0, 255, 0.2);
+        }
+        .filter-btn {
+            background: linear-gradient(45deg, #8400ff, #4b0082);
+            color: white; border: none; padding: 10px 25px;
+            border-radius: 10px; cursor: pointer; transition: 0.3s;
+        }
+        .filter-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(132, 0, 255, 0.4); }
+
+        /* شبكة بينتو */
         .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-            padding-bottom: 50px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; margin-bottom: 30px;
         }
 
-        /* الكارت السحري */
         .magic-card {
             background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            transition: transform 0.1s;
+            border-radius: 20px; padding: 25px; position: relative; overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: transform 0.1s;
         }
-
-        /* تأثير الإضاءة (Spotlight) */
         .magic-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(
-                circle at var(--mouse-x) var(--mouse-y),
-                rgba(var(--glow-color), 0.15),
-                transparent var(--spotlight-radius)
-            );
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            z-index: 1;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(132, 0, 255, 0.15), transparent 300px);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1;
         }
+        .magic-card:hover::before { opacity: 1; }
+        
+        .card-value { font-size: 36px; font-weight: 900; margin: 10px 0; background: linear-gradient(to right, #fff, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-label { font-size: 12px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; }
 
-        .magic-card:hover::before {
-            opacity: 1;
-        }
-
-        /* محتوى الكارت */
-        .card-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .card-label {
-            display: inline-block;
-            padding: 5px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            font-size: 11px;
-            color: #a1a1aa;
-            margin-bottom: 20px;
-        }
-
-        .card-value {
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 5px;
-            background: linear-gradient(to right, #fff, #a1a1aa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .card-desc {
-            color: #71717a;
-            font-size: 14px;
-        }
-
-        /* الجدول الشفاف */
+        /* الجدول */
         .table-container {
-            background: rgba(6, 0, 16, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 30px;
+            background: rgba(6, 0, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; padding: 20px; overflow-x: auto;
         }
-
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-            color: #e4e4e7;
-        }
-
-        .custom-table th {
-            text-align: right;
-            padding: 15px;
-            color: #a1a1aa;
-            font-size: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .custom-table td {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 14px;
-        }
-
-        .custom-table tr:last-child td { border-bottom: none; }
+        .custom-table { width: 100%; border-collapse: collapse; color: #e4e4e7; min-width: 800px; }
+        .custom-table th { text-align: right; padding: 15px; color: #8400ff; font-size: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .custom-table td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; }
         .custom-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
         /* شارات الحالة */
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-        .bg-success-subtle { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
-        .bg-danger-subtle { background: rgba(239, 68, 68, 0.1); color: #f87171; }
-        
-        /* التجاوب */
+        .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .badge-yes { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
+        .badge-no { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-content { margin-right: 0; padding: 15px; }
-            .bento-grid { grid-template-columns: 1fr; }
+            .filter-container { flex-direction: column; align-items: stretch; }
         }
-        
-        /* النقاط المتناثرة (Particles) */
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(132, 0, 255, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10;
-        }
-
     </style>
 </head>
 <body>
@@ -209,56 +135,45 @@
             <i class="fas fa-satellite-dish fa-2x" style="color: #8400ff; margin-left: 10px;"></i>
             <h5 class="mb-0 fw-bold">VOCO CRM</h5>
         </div>
-        <a href="dashboard.html" class="active"><i class="fas fa-th-large"></i> الرئيسية</a>
-        <a href="reports.html"><i class="fas fa-chart-pie"></i> التقارير</a>
-        <a href="users.html"><i class="fas fa-users"></i> المندوبين</a>
-        <a href="settings.html"><i class="fas fa-sliders-h"></i> الإعدادات</a>
+        <a href="dashboard.html" class="active"><i class="fas fa-th-large ms-2"></i> الرئيسية</a>
+        <a href="reports.html"><i class="fas fa-chart-pie ms-2"></i> التقارير</a>
+        <a href="users.html"><i class="fas fa-users ms-2"></i> المندوبين</a>
     </div>
 
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold">لوحة القيادة ✨</h2>
-                <span class="text-secondary" style="font-size: 12px;">مرحباً بك في نظام الذكاء الاصطناعي</span>
-            </div>
+            <h2 class="fw-bold">لوحة القيادة ✨</h2>
             <button class="btn btn-outline-light rounded-pill px-4" onclick="location.reload()">
-                <i class="fas fa-sync-alt"></i> تحديث
+                <i class="fas fa-sync-alt"></i>
             </button>
         </div>
 
-        <div class="bento-grid" id="bentoGrid">
-            
-            <div class="magic-card">
-                <div class="card-content">
-                    <div class="card-label">Visits</div>
-                    <div class="card-value" id="totalVisits">0</div>
-                    <div class="card-desc">إجمالي الزيارات المسجلة</div>
-                </div>
-            </div>
+        <div class="filter-container">
+            <select id="filterRep" class="custom-input form-select" style="background-color: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                <option value="all">كل المندوبين</option>
+            </select>
+            <input type="date" id="filterDate" class="custom-input">
+            <button onclick="applyFilters()" class="filter-btn">تصفية النتائج</button>
+            <button onclick="resetFilters()" class="btn btn-outline-secondary text-white border-0">إعادة تعيين</button>
+        </div>
 
+        <div class="bento-grid">
             <div class="magic-card">
-                <div class="card-content">
-                    <div class="card-label">Agents</div>
-                    <div class="card-value" id="activeAgents">0</div>
-                    <div class="card-desc">عدد المندوبين النشطين</div>
-                </div>
+                <div class="card-label">إجمالي الزيارات</div>
+                <div class="card-value" id="totalVisits">0</div>
             </div>
-
             <div class="magic-card">
-                <div class="card-content">
-                    <div class="card-label">Conversion</div>
-                    <div class="card-value" id="interestRate">0%</div>
-                    <div class="card-desc">نسبة العملاء المهتمين</div>
-                </div>
+                <div class="card-label">المندوبين النشطين</div>
+                <div class="card-value" id="activeAgents">0</div>
             </div>
-
+            <div class="magic-card">
+                <div class="card-label">نسبة الاهتمام</div>
+                <div class="card-value" id="interestRate">0%</div>
+            </div>
         </div>
 
         <div class="table-container">
-            <div class="d-flex justify-content-between mb-4">
-                <h5 class="fw-bold">سجل الزيارات الحية</h5>
-                <span class="badge bg-success-subtle">Live Updates</span>
-            </div>
+            <h5 class="fw-bold mb-4 text-white">سجل الزيارات والتحليل الصوتي</h5>
             <table class="custom-table">
                 <thead>
                     <tr>
@@ -267,141 +182,111 @@
                         <th>العميل</th>
                         <th>الهاتف</th>
                         <th>المكان</th>
-                        <th>الحالة</th>
-                        <th>الموقع</th>
+                        <th>الاهتمام</th>
+                        <th>كلام المندوب (Voice Text)</th> <th>الموقع</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="7" class="text-center py-4 text-secondary">جاري تحميل البيانات...</td></tr>
+                    <tr><td colspan="8" class="text-center py-4 text-secondary">جاري تحميل البيانات...</td></tr>
                 </tbody>
             </table>
         </div>
-
     </div>
 
     <script>
         const BASE_URL = '/api';
+        let allData = []; // خزن البيانات هنا عشان الفلتر
 
-        // 1. منطق الـ Magic Cards (اللمعان والميلان)
-        const cards = document.querySelectorAll('.magic-card');
-        
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
+        // 1. تحريك الكروت
+        document.querySelectorAll('.magic-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                
-                // تحديث مكان الضوء
                 card.style.setProperty('--mouse-x', `${x}px`);
                 card.style.setProperty('--mouse-y', `${y}px`);
-
-                // حساب الميلان (Tilt)
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -5; // عكس الاتجاه
-                const rotateY = ((x - centerX) / centerX) * 5;
-
-                gsap.to(card, {
-                    transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
-                    duration: 0.1
-                });
+                gsap.to(card, { transform: `perspective(1000px) rotateX(${(y - rect.height/2) / -10}deg) rotateY(${(x - rect.width/2) / 10}deg) scale(1.02)`, duration: 0.1 });
             });
-
             card.addEventListener('mouseleave', () => {
-                gsap.to(card, {
-                    transform: 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
-                    duration: 0.5,
-                    ease: 'power2.out'
-                });
-            });
-            
-            // تأثير النقاط (Particles) عند النقر
-            card.addEventListener('click', (e) => {
-                createParticles(e.clientX, e.clientY);
+                gsap.to(card, { transform: 'perspective(1000px) rotateX(0) rotateY(0) scale(1)', duration: 0.5 });
             });
         });
 
-        function createParticles(x, y) {
-            for(let i=0; i<8; i++) {
-                const p = document.createElement('div');
-                p.classList.add('particle');
-                document.body.appendChild(p);
-                
-                const angle = Math.random() * Math.PI * 2;
-                const velocity = 50 + Math.random() * 50;
-                const tx = Math.cos(angle) * velocity;
-                const ty = Math.sin(angle) * velocity;
-
-                gsap.fromTo(p, 
-                    { x: x, y: y, opacity: 1, scale: 1 },
-                    { 
-                        x: x + tx, 
-                        y: y + ty, 
-                        opacity: 0, 
-                        scale: 0, 
-                        duration: 0.8, 
-                        ease: "power2.out",
-                        onComplete: () => p.remove()
-                    }
-                );
-            }
-        }
-
-        // 2. جلب البيانات الحقيقية
+        // 2. جلب البيانات
         async function loadData() {
             try {
                 const res = await axios.get(`${BASE_URL}/visits`);
-                const data = res.data.data;
-                renderStats(data);
-                renderTable(data);
-            } catch (e) {
-                console.error(e);
-            }
+                allData = res.data.data; // حفظ البيانات الأصلية
+                populateRepFilter(allData);
+                renderDashboard(allData);
+            } catch (e) { console.error(e); }
         }
 
-        function renderStats(data) {
+        // 3. تعبئة قائمة المندوبين
+        function populateRepFilter(data) {
+            const reps = [...new Set(data.map(v => v.rep_name))];
+            const select = document.getElementById('filterRep');
+            // الحفاظ على خيار "الكل" ومسح الباقي
+            select.innerHTML = '<option value="all">كل المندوبين</option>';
+            reps.forEach(rep => {
+                select.innerHTML += `<option value="${rep}">${rep}</option>`;
+            });
+        }
+
+        // 4. تطبيق الفلتر
+        function applyFilters() {
+            const selectedRep = document.getElementById('filterRep').value;
+            const selectedDate = document.getElementById('filterDate').value;
+
+            const filtered = allData.filter(item => {
+                const itemDate = new Date(item.created_at).toISOString().split('T')[0];
+                const repMatch = selectedRep === 'all' || item.rep_name === selectedRep;
+                const dateMatch = !selectedDate || itemDate === selectedDate;
+                return repMatch && dateMatch;
+            });
+
+            renderDashboard(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('filterRep').value = 'all';
+            document.getElementById('filterDate').value = '';
+            renderDashboard(allData);
+        }
+
+        // 5. عرض البيانات في الشاشة
+        function renderDashboard(data) {
+            // الإحصائيات
             const total = data.length;
-            const agents = new Set(data.map(v => v.rep_name)).size;
+            const active = new Set(data.map(v => v.rep_name)).size;
             const interested = data.filter(v => v.is_interested).length;
-            const rate = total > 0 ? Math.round((interested / total) * 100) : 0;
+            const rate = total > 0 ? Math.round((interested/total)*100) : 0;
 
-            // عداد متحرك للأرقام
-            animateValue("totalVisits", 0, total, 1000);
-            animateValue("activeAgents", 0, agents, 1000);
+            document.getElementById('totalVisits').innerText = total;
+            document.getElementById('activeAgents').innerText = active;
             document.getElementById('interestRate').innerText = `${rate}%`;
-        }
 
-        function animateValue(id, start, end, duration) {
-            let obj = document.getElementById(id);
-            let range = end - start;
-            let current = start;
-            let increment = end > start ? 1 : -1;
-            let stepTime = Math.abs(Math.floor(duration / range));
-            if (stepTime < 10) stepTime = 10; 
-            
-            let timer = setInterval(function() {
-                current += increment;
-                obj.innerHTML = current;
-                if (current == end) clearInterval(timer);
-            }, stepTime);
-        }
-
-        function renderTable(data) {
+            // الجدول
             const tbody = document.getElementById('tableBody');
             if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-secondary">لا توجد بيانات</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-secondary">لا توجد بيانات مطابقة</td></tr>';
                 return;
             }
-            
+
             let html = '';
-            data.slice(0, 15).forEach(v => {
+            data.slice(0, 20).forEach(v => {
                 const status = v.is_interested 
-                    ? '<span class="status-badge bg-success-subtle">مهتم</span>' 
-                    : '<span class="status-badge bg-danger-subtle">غير مهتم</span>';
+                    ? '<span class="badge-status badge-yes">مهتم</span>' 
+                    : '<span class="badge-status badge-no">غير مهتم</span>';
                 
                 const mapLink = v.lat 
                     ? `<a href="https://www.google.com/maps/search/?api=1&query=${v.lat},${v.lng}" target="_blank" style="color:#8400ff"><i class="fas fa-location-arrow"></i></a>`
                     : '-';
+
+                // 👇👇👇 إضافة النص الصوتي مع تنسيق جميل 👇👇👇
+                const voiceText = v.voice_text 
+                    ? `<span style="color:#d1d5db; font-size:12px; display:block; max-width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${v.voice_text}">${v.voice_text}</span>` 
+                    : '<span style="color:#555">-</span>';
 
                 html += `
                     <tr>
@@ -411,7 +296,7 @@
                         <td style="font-family:monospace; color:#a1a1aa">${v.customer_phone || '-'}</td>
                         <td>${v.place_type || '-'}</td>
                         <td>${status}</td>
-                        <td>${mapLink}</td>
+                        <td>${voiceText}</td> <td>${mapLink}</td>
                     </tr>
                 `;
             });
@@ -419,7 +304,7 @@
         }
 
         loadData();
-        setInterval(loadData, 30000); // تحديث كل 30 ثانية
+        setInterval(loadData, 30000);
     </script>
 </body>
 </html>
